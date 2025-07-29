@@ -73,6 +73,12 @@ button {
   margin-top: 4rem;
 }
 
+.app__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .app__title {
   text-transform: capitalize;
 }
@@ -280,9 +286,6 @@ select:focus {
 /* Theme Toggler */
 
 .theme-toggler {
-  position: fixed;
-  bottom: 1rem;
-  left: 1rem;
   width: 5rem;
   height: 5rem;
   background-color: var(--category-bg);
