@@ -14,7 +14,7 @@ let todosList = [
     id: 2,
     title: "todo title 2",
     description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maiores, ratione corrupti. Autem, eius. Optio obcaecati dicta nesciunt quae sed est maxime totam sit! Velit illo reprehenderit provident assumenda recusandae quaerat. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptates maiores, nisi at ullam, tempora tenetur architecto sapiente magni repellat quia cumque perspiciatis! Possimus tempore minus consequuntur eum sit, fugit illo?",
+      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maiores, ratione corrupti. Autem, eius. Optio obcaecati dicta nesciunt quae sed est maxime totam sit! Velit illo reprehenderit provident assumenda ",
     stars: 2,
     createdAt: new Date().toISOString(),
     category: "",
@@ -25,8 +25,7 @@ let todosList = [
   {
     id: 3,
     title: "todo title 3",
-    description:
-      "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maiores, ratione corrupti. Autem, eius. Optio obcaecati dicta nesciunt quae sed est maxime totam sit! Velit illo reprehenderit provident assumenda recusandae quaerat. Lorem ipsum dolor sit amet consectetur, adipisicing elit. Voluptates maiores, nisi at ullam, tempora tenetur architecto sapiente magni repellat quia cumque perspiciatis! Possimus tempore minus consequuntur eum sit, fugit illo?",
+    description: "Lorem, ipsum dolor sit amet consectetur adipisicing elit. Maiores, ratione corrupti. Autem, eius. ",
     stars: 3,
     createdAt: new Date().toISOString(),
     category: "",
@@ -41,7 +40,10 @@ let filterTypes = {
   categoryStatus: "all", // all
 };
 
+let editedTodoId = null;
+
 /*------------- Elements -------------*/
+const html = document.documentElement;
 const formAddTodo = document.querySelector(".add-todo-form");
 const titleInput = document.querySelector(".title-input");
 const diffcultyInput = document.querySelector(".diffculty-input");
@@ -54,8 +56,11 @@ const categoryFilter = document.querySelector("#category-filter");
 const sortInput = document.querySelector(".sort-input");
 const clearTodosBtn = document.querySelector(".clear-todos-btn");
 const todosWrapper = document.querySelector(".todos__list");
+const themeToggler = document.querySelector(".theme-toggler");
+const sunIcon = document.querySelector(".theme-toggler .sun-icon");
+const moonIcon = document.querySelector(".theme-toggler .moon-icon");
 
-/*------------- Functions & Handlers -------------*/
+/*------------- Functions -------------*/
 
 function calcDate(time) {
   const date = new Date(time);
@@ -76,10 +81,64 @@ function clearFormAddTodo() {
 
 function clearAllTodos() {
   todosList = [];
+  localStorage.setItem("todos", JSON.stringify(todosList));
   todosGenerator(todosList);
 }
 
-function sortTodos() {}
+function handleCompleteTodo(ID) {
+  todosList = todosList.map(todo => {
+    if (todo.id === ID) {
+      return { ...todo, isComplete: !todo.isComplete };
+    } else {
+      return todo;
+    }
+  });
+
+  localStorage.setItem("todos", JSON.stringify(todosList));
+  todosGenerator(filterTodos(filterTypes));
+}
+
+function filterTodos(filterTypes) {
+  let result = [...todosList];
+
+  if (filterTypes.completeStatus === "completed") {
+    result = result.filter(item => item.isComplete);
+  }
+
+  if (filterTypes.completeStatus === "uncompleted") {
+    result = result.filter(item => !item.isComplete);
+  }
+
+  if (filterTypes.completeStatus === "all") {
+    result = todosList;
+  }
+
+  if (filterTypes.diffcultyStatus === "star-1") {
+    result = result.filter(item => item.stars === 1);
+  }
+
+  if (filterTypes.diffcultyStatus === "star-2") {
+    result = result.filter(item => item.stars === 2);
+  }
+
+  if (filterTypes.diffcultyStatus === "star-3") {
+    result = result.filter(item => item.stars === 3);
+  }
+
+  if (filterTypes.diffcultyStatus === "star-4") {
+    result = result.filter(item => item.stars === 4);
+  }
+
+  if (filterTypes.diffcultyStatus === "star-5") {
+    result = result.filter(item => item.stars === 5);
+  }
+
+  if (filterTypes.categoryStatus !== "all") {
+    result = result.filter(item => item.category === filterTypes.categoryStatus);
+  }
+
+  return result;
+}
 
 function todosGenerator(list) {
   todosWrapper.innerHTML = "";
@@ -87,7 +146,7 @@ function todosGenerator(list) {
   list.map(item =>
     todosWrapper.insertAdjacentHTML(
       "beforeend",
-      `<div class="todo">
+      `<div class="todo ${item.isComplete ? "todo--active" : ""}">
               <div class="todo__header">
                 <div class="todo__header-left">
                   <p class="todo__title">${item.title}</p>
@@ -109,20 +168,19 @@ function todosGenerator(list) {
               </div>
               <div class="todo__footer">
                 <div class="todo__actions">
-                  <button class="todo__action-btn">
+                  <button class="todo__action-btn" onClick={handleRemoveTodo(${item.id})}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash2 icon" viewBox="0 0 16 16">
                       <path
                         d="M14 3a.7.7 0 0 1-.037.225l-1.684 10.104A2 2 0 0 1 10.305 15H5.694a2 2 0 0 1-1.973-1.671L2.037 3.225A.7.7 0 0 1 2 3c0-1.105 2.686-2 6-2s6 .895 6 2M3.215 4.207l1.493 8.957a1 1 0 0 0 .986.836h4.612a1 1 0 0 0 .986-.836l1.493-8.957C11.69 4.689 9.954 5 8 5s-3.69-.311-4.785-.793" />
                     </svg>
                   </button>
-                  <button class="todo__action-btn">
+                  <button class="todo__action-btn" onClick={handleEditTodo(${item.id})}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen icon" viewBox="0 0 16 16">
                       <path
                         d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z" />
                     </svg>
                   </button>
-                  <button class="todo__action-btn">
-                    
+                  <button class="todo__action-btn" onClick={handleCompleteTodo(${item.id})}>
                     ${
                       item.isComplete
                         ? ` <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-all icon" viewBox="0 0 16 16">
@@ -135,7 +193,7 @@ function todosGenerator(list) {
                     </svg>`
                     } 
                   </button>
-                  <button class="todo__action-btn">
+                  <button class="todo__action-btn" onClick={handleTodoTimer(${item.id})}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-stopwatch icon" viewBox="0 0 16 16">
                       <path d="M8.5 5.6a.5.5 0 1 0-1 0v2.9h-3a.5.5 0 0 0 0 1H8a.5.5 0 0 0 .5-.5z" />
                       <path
@@ -143,20 +201,69 @@ function todosGenerator(list) {
                     </svg>
                   </button>
                 </div>
-                <span class="todo__time">12:30:21</span>
+                ${item.timer && `<span class="todo__time">${item.timer}</span>`}
               </div>
             </div>`
     )
   );
 }
 
-// when page is load
-todosGenerator(todosList);
+function setTheme() {
+  const theme = localStorage.getItem("theme") || "light"; // default theme is light
+  if (theme === "light") {
+    html.classList.remove("dark");
+  } else {
+    html.classList.add("dark");
+  }
+}
+
+function addTodo(newTodo) {
+  // const hasId = todosList.some(todo => todo.id === ID);
+
+  if (!editedTodoId) {
+    todosList.push(newTodo);
+    localStorage.setItem("todos", JSON.stringify(todosList));
+  } else {
+    const todoIndex = todosList.findIndex(todo => todo.id === editedTodoId);
+    todosList[todoIndex] = { ...todosList[todoIndex], ...newTodo };
+    localStorage.setItem("todos", JSON.stringify(todosList));
+  }
+
+  editedTodoId = null;
+}
+
+window.handleRemoveTodo = function (ID) {
+  todosList = todosList.filter(todo => todo.id !== ID);
+  localStorage.setItem("todos", JSON.stringify(todosList));
+  todosGenerator(filterTodos(filterTypes));
+};
+
+window.handleEditTodo = function (ID) {
+  const currentTodo = todosList.find(todo => todo.id === ID);
+  editedTodoId = ID;
+  titleInput.value = currentTodo.title;
+  diffcultyInput.value = currentTodo.stars;
+  categoryInput.value = currentTodo.category;
+  descriptionInput.value = currentTodo.description;
+};
+
+window.handleTodoTimer = function (ID) {
+  console.log("handle todo timer ", ID);
+};
+
+/*------------------------- Event Handlers -------------------------*/
+
+document.addEventListener("DOMContentLoaded", e => {
+  todosList = JSON.parse(localStorage.getItem("todos")) || [];
+  todosGenerator(todosList);
+  setTheme();
+});
 
 formAddTodo.addEventListener("submit", e => {
   e.preventDefault();
+
   const newTodo = {
-    id: todosList.length + 1,
+    id: editedTodoId || todosList.length + 1,
     title: titleInput.value,
     description: descriptionInput.value,
     createdAt: new Date().toISOString(),
@@ -166,69 +273,12 @@ formAddTodo.addEventListener("submit", e => {
     timer: 0,
   };
 
-  todosList.push(newTodo);
+  addTodo(newTodo);
   clearFormAddTodo();
   todosGenerator(todosList);
 });
 
-function filterTodos() {}
-
-// Clear All Todos when click on clear button
 clearTodosBtn.addEventListener("click", clearAllTodos);
-
-/* Filteration Actions */
-function filterTodos(filterTypes) {
-  let result = [];
-  const todosCopy = [...todosList];
-
-  if (filterTypes.completeStatus === "completed") {
-    result = todosCopy.filter(item => item.isComplete);
-  }
-
-  if (filterTypes.completeStatus === "uncompleted") {
-    result = todosCopy.filter(item => !item.isComplete);
-  }
-
-  if (filterTypes.completeStatus === "all") {
-    result = todosList;
-  }
-
-  if (filterTypes.diffcultyStatus === "star-1") {
-    result = todosCopy.filter(item => item.stars === 1);
-  }
-
-  if (filterTypes.diffcultyStatus === "star-2") {
-    result = todosCopy.filter(item => item.stars === 2);
-  }
-
-  if (filterTypes.diffcultyStatus === "star-3") {
-    result = todosCopy.filter(item => item.stars === 3);
-  }
-
-  if (filterTypes.diffcultyStatus === "star-4") {
-    result = todosCopy.filter(item => item.stars === 4);
-  }
-
-  if (filterTypes.diffcultyStatus === "star-5") {
-    result = todosCopy.filter(item => item.stars === 5);
-  }
-
-  // if (filterTypes.diffcultyStatus === "all") {
-  //   result = todosList;
-  // }
-
-  // if (filterTypes.categoryStatus === "all") {
-  //   result = todosList;
-  // }
-
-  if (filterTypes.categoryStatus !== "all") {
-    result = todosCopy.filter(item => item.category === filterTypes.categoryStatus);
-  }
-
-  return result;
-}
-
-function sortTodos() {}
 
 completationFilter.addEventListener("change", e => {
   filterTypes.completeStatus = e.target.value;
@@ -238,14 +288,47 @@ completationFilter.addEventListener("change", e => {
 
 diffcultyFilter.addEventListener("change", e => {
   filterTypes.diffcultyStatus = e.target.value;
-  console.log(filterTodos(filterTypes));
   const filteredItems = filterTodos(filterTypes);
   todosGenerator(filteredItems);
 });
 
 categoryFilter.addEventListener("change", e => {
   filterTypes.categoryStatus = e.target.value;
-  console.log(filterTodos(filterTypes));
   const filteredItems = filterTodos(filterTypes);
   todosGenerator(filteredItems);
+});
+
+sortInput.addEventListener("change", e => {
+  const sortType = e.target.value || "defaul";
+  const filteredItems = filterTodos(filterTypes);
+
+  if (sortType === "new") {
+    filteredItems.sort((a, b) => new Date(b.createdAt).getMilliseconds() - new Date(a.createdAt).getMilliseconds());
+  } else if (sortType === "old") {
+    filteredItems.sort((a, b) => new Date(a.createdAt).getMilliseconds() - new Date(b.createdAt).getMilliseconds());
+  } else if (sortType === "hard") {
+    filteredItems.sort((a, b) => b.stars - a.stars);
+  } else if (sortType === "easy") {
+    filteredItems.sort((a, b) => a.stars - b.stars);
+  } else if (sortType === "desc") {
+    filteredItems.sort((a, b) => b.description.length - a.description.length);
+  } else if (sortType === "complete-first") {
+    filteredItems.sort((a, b) => Number(b.isComplete) - Number(a.isComplete));
+  } else if (sortType === "uncomplete-first") {
+    filteredItems.sort((a, b) => Number(a.isComplete) - Number(b.isComplete));
+  }
+
+  todosGenerator(filteredItems);
+});
+
+themeToggler.addEventListener("click", e => {
+  const theme = localStorage.getItem("theme");
+
+  if (theme === "light") {
+    localStorage.setItem("theme", "dark");
+  } else {
+    localStorage.setItem("theme", "light");
+  }
+
+  setTheme();
 });
