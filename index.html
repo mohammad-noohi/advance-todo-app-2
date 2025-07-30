@@ -47,7 +47,10 @@
             </div>
 
             <div class="category-input-field">
-              <input type="text" class="category-input" placeholder="add your category (optional)" />
+              <input type="text" class="category-input" list="categories-data-list" placeholder="add your category (optional)" />
+              <datalist id="categories-data-list">
+                <!-- categories list generate by js -->
+              </datalist>
             </div>
 
             <div class="description-input-field">
@@ -87,10 +90,10 @@
               <label class="filter-field" for="category-filter">
                 <span class="filter-field__title">categories filter :</span>
                 <select id="category-filter">
-                  <option value="all">all</option>
+                  <!-- <option value="all">all</option>
                   <option value="work">work</option>
                   <option value="personal">personal</option>
-                  <option value="study">study</option>
+                  <option value="study">study</option> -->
                 </select>
               </label>
             </div>
@@ -124,6 +127,11 @@
         </section>
       </div>
     </main>
+
+    <!-- Loader Effect -->
+    <div class="loader">
+      <div class="loading"></div>
+    </div>
     <script src="./script.js"></script>
   </body>
 </html>

@@ -8,6 +8,7 @@
   --badge-color: #e3e7fd;
   --text-light: #7a7e9a;
   --text-dark: #232946;
+  --loader-bg: rgba(255, 255, 255, 0.5);
 }
 
 .dark:root {
@@ -19,6 +20,7 @@
   --badge-color: #393e5c4f;
   --text-light: #b8bcd9;
   --text-dark: #f4f6fb;
+  --loader-bg: rgba(0, 0, 0, 0.5);
 }
 
 /* Reset CSS */
@@ -355,6 +357,43 @@ select:focus {
 
 .dark .theme-toggler .sun-icon {
   display: none;
+}
+
+/* Loader */
+.loader {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--loader-bg);
+  backdrop-filter: blur(5px);
+}
+
+.loader--stop {
+  display: none;
+}
+
+.loading {
+  width: 5rem;
+  height: 5rem;
+  border: 4px solid var(--main-color);
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 2s linear infinite;
+}
+
+/* Animations */
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Responsive */

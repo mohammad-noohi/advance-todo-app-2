@@ -41,13 +41,17 @@ let filterTypes = {
 };
 
 let editedTodoId = null;
+let intialCategories = ["all", "work", "personal", "study"];
+let categoriesList = intialCategories;
 
 /*------------- Elements -------------*/
+
 const html = document.documentElement;
 const formAddTodo = document.querySelector(".add-todo-form");
 const titleInput = document.querySelector(".title-input");
 const diffcultyInput = document.querySelector(".diffculty-input");
 const categoryInput = document.querySelector(".category-input");
+const categoryDataListElm = document.querySelector("#categories-data-list");
 const descriptionInput = document.querySelector(".description-input");
 const addTodoBtn = document.querySelector(".add-todo-btn");
 const completationFilter = document.querySelector("#complete-filter");
@@ -59,6 +63,7 @@ const todosWrapper = document.querySelector(".todos__list");
 const themeToggler = document.querySelector(".theme-toggler");
 const sunIcon = document.querySelector(".theme-toggler .sun-icon");
 const moonIcon = document.querySelector(".theme-toggler .moon-icon");
+const loaderElm = document.querySelector(".loader");
 
 /*------------- Functions -------------*/
 
@@ -209,12 +214,14 @@ function todosGenerator(list) {
 }
 
 function setTheme() {
-  const theme = localStorage.getItem("theme") || "light"; // default theme is light
+  let theme = localStorage.getItem("theme") || "light"; // default theme is light
   if (theme === "light") {
     html.classList.remove("dark");
-  } else {
+  } else if (theme === "dark") {
     html.classList.add("dark");
   }
+
+  localStorage.setItem("theme", theme);
 }
 
 function addTodo(newTodo) {
@@ -230,6 +237,21 @@ function addTodo(newTodo) {
   }
 
   editedTodoId = null;
+}
+
+function categoriesGenerator() {
+  // generate categories in category selectbox filter
+  categoriesList = JSON.parse(localStorage.getItem("categories")) || intialCategories;
+  categoryFilter.innerHTML = "";
+  categoriesList.map(cat => {
+    categoryFilter.insertAdjacentHTML("beforeend", `<option value="${cat}">${cat}</option>`);
+  });
+
+  // generate categories in category datalist tag
+  categoryDataListElm.innerHTML = "";
+  categoriesList.map(cat => {
+    categoryDataListElm.insertAdjacentHTML("beforeend", `<option value="${cat}">${cat}</option>`);
+  });
 }
 
 window.handleRemoveTodo = function (ID) {
@@ -257,6 +279,15 @@ document.addEventListener("DOMContentLoaded", e => {
   todosList = JSON.parse(localStorage.getItem("todos")) || [];
   todosGenerator(todosList);
   setTheme();
+
+  // Hider loader
+  // simulate long loading
+  setTimeout(() => {
+    loaderElm.classList.add("loader--stop");
+  }, 1000);
+
+  // generate categoris select filteration
+  categoriesGenerator();
 });
 
 formAddTodo.addEventListener("submit", e => {
@@ -273,9 +304,17 @@ formAddTodo.addEventListener("submit", e => {
     timer: 0,
   };
 
+  // if category is new add to categories lis
+  const newCat = categoryInput.value;
+  const hasCat = categoriesList.some(cat => cat == newCat);
+  if (!hasCat) categoriesList.push(newCat);
+  console.log("has cat", hasCat);
+  localStorage.setItem("categories", JSON.stringify(categoriesList));
+
   addTodo(newTodo);
   clearFormAddTodo();
   todosGenerator(todosList);
+  categoriesGenerator();
 });
 
 clearTodosBtn.addEventListener("click", clearAllTodos);
