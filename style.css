@@ -206,6 +206,12 @@ select:focus {
   margin-top: 4rem;
 }
 
+.todos__header-right {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
 .todos-section__title {
   text-transform: capitalize;
 }
@@ -215,7 +221,23 @@ select:focus {
   padding: 0.6rem 1.8rem;
   font-size: 1.8rem;
   text-transform: capitalize;
+  background-color: var(--red-color);
+  color: #fff;
+  flex-shrink: 0;
+  align-self: stretch;
+}
+
+.export-type-select {
+}
+
+.export-btn {
+  border: none;
+  outline: none;
   background-color: var(--main-color);
+  padding: 0.6rem 1.8rem;
+  font-size: 1.8rem;
+  text-transform: capitalize;
+  border-radius: 0.8rem;
   color: #fff;
 }
 

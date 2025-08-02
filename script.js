@@ -706,3 +706,56 @@ themeToggler.addEventListener("click", e => {
 
   setTheme();
 });
+
+/* Download Data as file (PDF , CSV , JSON) */
+const exportSelectElm = document.querySelector(".export-type-select");
+const exportBtn = document.querySelector(".export-btn");
+
+exportBtn.addEventListener("click", e => {
+  const format = exportSelectElm.value;
+  console.log(format);
+  if (format === "json") {
+    downloadJSON(todosList);
+  } else if (format === "csv") {
+    downloadCSV(todosList);
+  } else if (format === "pdf") {
+    downloadPDF(todosList);
+  }
+});
+
+function downloadJSON(data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+
+  const url = URL.createObjectURL(blob);
+  triggerDownload(url, "data.json");
+}
+
+function downloadCSV(data) {
+  const headers = Object.keys(data[0]).join(",");
+  const rows = data.map(row => Object.values(row).join(",")).join("\n");
+  const csv = headers + "\n" + rows;
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  triggerDownload(url, "data.csv");
+}
+
+function downloadPDF(data) {
+  // use jsPdf library to handle this
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  data.forEach((item, index) => {
+    const line = `${item.id} | ${item.title} | ${item.description} | ${item.star} | ${item.createdAt} | ${item.isComplete} | ${item.category} | ${item.timer}`;
+    doc.text(line, 10, 10 + index * 10);
+  });
+  doc.save("data.pdf");
+}
+
+function triggerDownload(url, filename) {
+  const a = document.createElement("a");
+  document.body.appendChild(a);
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+}

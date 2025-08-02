@@ -115,7 +115,15 @@
 
           <div class="todos__header">
             <h2 class="todos-section__title">Todos List</h2>
-            <button class="clear-todos-btn">clear all todos</button>
+            <div class="todos__header-right">
+              <select class="export-type-select">
+                <option value="json">JSON</option>
+                <option value="csv">CSV</option>
+                <option value="pdf">PDF</option>
+              </select>
+              <button class="export-btn">Export</button>
+              <button class="clear-todos-btn">clear all todos</button>
+            </div>
           </div>
 
           <div class="todos__list">
@@ -129,6 +137,9 @@
     <div class="loader">
       <div class="loading"></div>
     </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
     <script src="./script.js"></script>
   </body>
 </html>
