@@ -13,7 +13,7 @@ A feature-rich and customizable Todo application to help you manage your tasks e
 
 ## Live Demo
 
-[🚀 Try the Live Demo](https://your-live-demo-link.com)
+[🚀 Try the Live Demo](https://noohi-todo-app.netlify.app/)
 
 ## License
 
